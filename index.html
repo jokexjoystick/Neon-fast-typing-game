@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NEON TYPE // 9.0</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="retro-grid"></div>
+<div class="vignette"></div>
+
+<div id="nav-overlay" onclick="APP.toggleMenu()"></div>
+<nav id="side-menu">
+    <div class="menu-header">SYSTEM MENU</div>
+    <button onclick="APP.showGame()" class="menu-item">
+        <span class="icon">⚡</span> RANKED MISSION
+    </button>
+    <button onclick="APP.showPracticeSetup()" class="menu-item">
+        <span class="icon">🧘</span> PRACTICE MODE
+    </button>
+    <button onclick="APP.showProfile()" class="menu-item">
+        <span class="icon">🆔</span> OPERATOR PROFILE
+    </button>
+    <button onclick="APP.showLeaderboard()" class="menu-item">
+        <span class="icon">🏆</span> GLOBAL RANKINGS
+    </button>
+    <button onclick="location.reload()" class="menu-item logout">
+        <span class="icon">🔌</span> DISCONNECT
+    </button>
+</nav>
+
+<section id="screen-login" class="active-screen">
+    <div class="login-container">
+        <h1 class="glitch-title">NEON // TYPE</h1>
+        <div class="terminal-box">
+            <div class="input-group">
+                <label>OPERATOR ID</label>
+                <input type="text" id="login-user" placeholder="ENTER ALIAS" maxlength="10">
+            </div>
+            <div class="input-group">
+                <label>REGION</label>
+                <select id="login-country">
+                    <option value="🇮🇳">INDIA</option>
+                    <option value="🇺🇸">USA</option>
+                    <option value="🌍">GLOBAL</option>
+                    <option value="🇯🇵">JAPAN</option>
+                    <option value="🇬🇧">UK</option>
+                    <option value="🇩🇪">GERMANY</option>
+                </select>
+            </div>
+            <button class="neon-btn primary-btn" onclick="APP.login()">INITIALIZE SYSTEM</button>
+            <button class="neon-btn sm-btn" style="margin-top:15px; width:100%" onclick="APP.playAsGuest()">GUEST ACCESS</button>
+        </div>
+    </div>
+</section>
+
+<section id="screen-practice-setup">
+    <div class="glass-panel setup-card">
+        <h2>PRACTICE CONFIG</h2>
+        <p style="font-size:12px; opacity:0.7; margin-bottom:20px;">SCORES DO NOT COUNT TOWARDS RANK</p>
+        
+        <div class="input-group">
+            <label>CUSTOM TIME (SECONDS)</label>
+            <input type="number" id="practice-time" value="60" min="10" max="999">
+        </div>
+
+        <div class="input-group">
+            <label>SOURCE TEXT</label>
+            <textarea id="practice-text" placeholder="Paste text here or click Generate..."></textarea>
+        </div>
+        
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <button class="neon-btn sm-btn" onclick="APP.fillPracticeText()" style="flex:1">GENERATE STORY</button>
+            <button class="neon-btn sm-btn" onclick="document.getElementById('practice-text').value=''" style="flex:1">CLEAR</button>
+        </div>
+
+        <button class="neon-btn primary-btn" onclick="APP.startPractice()">BEGIN SIMULATION</button>
+        <button class="neon-btn sm-btn" onclick="APP.showGame()" style="margin-top:10px;">CANCEL</button>
+    </div>
+</section>
+
+<section id="screen-game">
+    <header>
+        <div class="hamburger" onclick="APP.toggleMenu()">
+            <div class="line"></div><div class="line"></div><div class="line"></div>
+        </div>
+
+        <div class="user-badge">
+            <div class="status-dot"></div>
+            <span id="hud-username">PLAYER</span>
+            <span id="hud-flag">🇮🇳</span>
+        </div>
+    </header>
+
+    <div class="control-deck" id="ranked-controls">
+        <select id="diff-select" class="glass-select" onchange="GAME.reset()">
+            <option value="paragraph" selected>STORY (Paragraph)</option> <option value="easy">EASY (Words)</option>
+            <option value="medium">MEDIUM (Caps)</option>
+            <option value="hard">HARD (Code)</option>
+        </select>
+        <select id="time-select" class="glass-select" onchange="GAME.reset()">
+            <option value="30">30s</option>
+            <option value="60" selected>60s</option>
+        </select>
+        <button class="neon-btn restart-btn" onclick="GAME.reset()">RESTART</button>
+    </div>
+
+    <div class="control-deck" id="practice-controls" style="display:none;">
+        <span style="font-weight:bold; color:var(--neon-blue); margin-right:15px;">:: PRACTICE MODE ::</span>
+        <button class="neon-btn restart-btn" onclick="GAME.reset()">RETRY</button>
+        <button class="neon-btn sm-btn" onclick="APP.showPracticeSetup()">CONFIG</button>
+    </div>
+
+    <div class="game-wrapper">
+        <div class="stats-row">
+            <div class="hud-box">
+                <div class="label">TIME</div>
+                <div class="value" id="time-display">60</div>
+            </div>
+            
+            <div class="timer-container" id="timer-box">
+                <svg class="timer-svg" width="120" height="120" viewBox="0 0 120 120">
+                    <circle class="bg-ring" cx="60" cy="60" r="54"></circle>
+                    <circle class="fg-ring" id="progress-ring" cx="60" cy="60" r="54"></circle>
+                </svg>
+            </div>
+
+            <div class="hud-box">
+                <div class="label">WPM</div>
+                <div class="value" id="wpm">0</div>
+            </div>
+        </div>
+
+        <div id="game-stage">
+            <input type="text" id="mobile-input">
+            <div id="text-container" onclick="GAME.focus()">
+                <div id="cursor"></div>
+                <div id="words-wrapper"></div>
+            </div>
+            <div class="hint">TAP CONSOLE TO ENGAGE</div>
+        </div>
+
+        <div id="visual-keyboard"></div>
+    </div>
+</section>
+
+<section id="screen-profile">
+    <div class="glass-panel profile-card">
+        <div class="profile-header-center">
+            <div class="big-flag" id="profile-flag-large">🇮🇳</div>
+            <h2 id="profile-name">PLAYER</h2>
+            <div id="profile-trophy" class="trophy-slot">NO TROPHY</div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-box-p">
+                <span>BEST WPM</span>
+                <b id="profile-best">0</b>
+            </div>
+            <div class="stat-box-p">
+                <span>GAMES</span>
+                <b id="profile-games">0</b>
+            </div>
+        </div>
+        <button class="neon-btn primary-btn" onclick="APP.showGame()">RETURN</button>
+    </div>
+</section>
+
+<section id="screen-leaderboard">
+    <div class="glass-panel leaderboard-container">
+        <div class="lb-header">
+            <h3>HALL OF FAME</h3>
+            <button class="circle-btn sm" onclick="APP.showGame()">✕</button>
+        </div>
+
+        <div class="lb-tabs">
+            <button class="tab-btn active" onclick="APP.switchLB('paragraph', this)">STORY</button>
+            <button class="tab-btn" onclick="APP.switchLB('easy', this)">EASY</button>
+            <button class="tab-btn" onclick="APP.switchLB('medium', this)">MED</button>
+            <button class="tab-btn" onclick="APP.switchLB('hard', this)">HARD</button>
+        </div>
+
+        <div id="podium-area" class="podium-container"></div>
+        <div class="table-wrap">
+            <div id="lb-content">LOADING DATA...</div>
+        </div>
+    </div>
+</section>
+
+<div id="modal-overlay">
+    <div class="glass-modal">
+        <h2 id="modal-title">MISSION COMPLETE</h2>
+        <div class="report-row">
+            <div class="rep-box">
+                <span class="lbl">SPEED</span>
+                <span class="val green" id="final-wpm">0</span>
+            </div>
+            <div class="rep-box">
+                <span class="lbl">ACCURACY</span>
+                <span class="val blue" id="final-acc">0%</span>
+            </div>
+        </div>
+        <div id="modal-msg" style="margin-bottom:15px; font-size:12px; opacity:0.7;"></div>
+        <button class="neon-btn primary-btn" onclick="GAME.reset()">REBOOT SYSTEM</button>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
